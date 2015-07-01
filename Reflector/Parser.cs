@@ -282,10 +282,10 @@ namespace Reflector
             return detalhe = detalhe.Replace(patterno, string.Empty);
 
         }
-        private static string DuplicarLinhasDetalhe(object obj, string detalhe, ref string tipoDetalhe, ref bool teste, ref string resultado)
+        private static string DuplicarLinhasDetalhe(object obj, string detalhe, ref string tipoDetalhe, ref bool isFinalizou, ref string resultado)
         {
             int numeroRepeticoes = 0;
-            if (teste)
+            if (isFinalizou)
             {
                 return string.IsNullOrEmpty(resultado) ? detalhe : resultado;
             }
@@ -304,12 +304,12 @@ namespace Reflector
                 dynamic o = info.GetValue(obj, null);
                 if (o != null && o.GetType().IsGenericType)
                 {
-                    bool bla = false;
+                    bool isLista = false;
                     if (info.PropertyType.GenericTypeArguments[0].Name.Equals(tipoDetalhe))
                     {
-                        if (!teste)
+                        if (!isFinalizou)
                         {
-                            bla = true;
+                            isLista = true;
                             numeroRepeticoes = o.Count;
                             if (numeroRepeticoes > 1)
                             {
@@ -320,12 +320,12 @@ namespace Reflector
                                 Array.Copy(documentoHtml, 4, documentoFinal, documentoDetalhe.Length, documentoHtml.Length - 4);
                                 documentoFinal = documentoFinal.Where(r => !string.IsNullOrEmpty(r)).ToArray();
                                 resultado = string.Join("", documentoFinal);
-                                teste = true;
+                                isFinalizou = true;
                             }
                         }
 
                     }
-                    if (!bla)
+                    if (!isLista)
                         foreach (var objeto in o)
                         {
                             foreach (PropertyInfo infoGeneric in objeto.GetType().GetProperties())
@@ -333,7 +333,7 @@ namespace Reflector
                                 if (objeto != null && objeto.GetType().IsClass && objeto.GetType() != typeof(string))
                                 {
                                     //  entidade = objeto.GetType().Name;
-                                    DuplicarLinhasDetalhe(objeto, detalhe, ref tipoDetalhe, ref teste, ref resultado);
+                                    DuplicarLinhasDetalhe(objeto, detalhe, ref tipoDetalhe, ref isFinalizou, ref resultado);
                                 }
 
                             }
@@ -795,7 +795,7 @@ namespace Reflector
         }
 
 
-        // Enums de formatação. As description são usadas como tipo de formatação na própria função de Format() do c#
+       
 
 
         public static string toExtenso(decimal valor, TabelaFormatacao tipo)
@@ -968,6 +968,7 @@ namespace Reflector
             return field == null ? default(T) : (T)field.Field.GetRawConstantValue();
         }
     }
+    // Enums de formatação. As description são usadas como tipo de formatação na própria função de Format() do c#
     public enum TabelaFormatacao
     {
         [Description("{0:0}")]
