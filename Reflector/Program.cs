@@ -39,24 +39,25 @@ namespace Reflector
                 new Endereco { Id = 2, Numero = 33, Logradouro = "Rua Com Saida", TipoEndereco = TipoEndereco.Comercial, TipoLogradouro = TipoLogradouro.Rua, TipoResidencia = TipoResidencia.Sala } 
             };
             Pessoa pessoa = new Pessoa { Id = 1, Nome = "Ronaldão das Américas - vulgo Banha", DataNascimento = DateTime.Parse("20/10/1986"), Enderecos = enderecos, Telefones = telefones, Documentos = new List<Documento>() { new Documento { Id = 1, Numero = "999.999.999-97", TipoDocumento = TipoDocumento.RG, Emissao = DateTime.Now, IsDocumentoIdentidade = true } } };
+            string html = string.Empty;
             StringBuilder storeContent = new StringBuilder();
-            TextReader tx = new StreamReader(@"D:\teste.txt");
             using (StreamReader reader = new StreamReader(@"D:\teste.txt"))
             {
-                var arq = reader.CurrentEncoding;
-                String line = string.Empty;
-                var a = tx.Read();
-                var c = reader.ToString();
-                var lines = File.ReadAllLines(@"D:\teste.txt");
+                string line = string.Empty;
                 while ((line = reader.ReadLine()) != null)
                 {
                     storeContent.Append(line);
+                    html += line;
                 }
             }
-            List<string> lista = new List<string>();
+             
+            html = Parser.ImprimirModeloRelatorio(pessoa, html);
+            using (System.IO.StreamWriter writer = new System.IO.StreamWriter(@"D:\saida.html"))
+            {
+                writer.WriteLine(html);
+                writer.Close();
+            }
 
-
-            // var a = System.Diagnostics.Process.Start(@"D:\teste.html");
         }
     }
 

@@ -18,7 +18,7 @@ namespace Reflector
     public static class Parser
     {
         #region Editor de Relatório
-        public string ImprimirModeloRelatorio<T>(T obj, int idRelatorio)
+        public static string ImprimirModeloRelatorio<T>(T obj, string html)
         {
 
             //var textoPadrao = serviceTextoPadraoRelatorio.GetTextosPadroes().ToList();
@@ -26,8 +26,8 @@ namespace Reflector
             //Relatorio relatorioImpressao = repositorio.Get(r => r.Id == idRelatorio);
             //string agatml = DefinirMargensTamanhoDocumento(relatorioImpressao);
             //string html = relatorioImpressao.Description;
-            string html = "";
-            Regex rgx = new Regex("\\n|\\r");
+           // string html = "";
+            Regex rgx = new Regex("\\n|\\r|\\t");
             html = rgx.Replace(html, "");
 
             string pattern = "(</[pd]>)";
@@ -67,10 +67,10 @@ namespace Reflector
             {
                 html = rgx.Replace(html, substituicao);
             }
-            return html + "<div style='height:100%; width: 100%; display:inline-block;  margin: 0px;  position: relative;background:url(http://i.piccy.info/i7/c7a432fe0beb98a3a66f5b423b430423/1-5-1789/1066503/lol.png);background-size:100% 100%;' class='line'></div>"; ;
+            return html  ;
         }
 
-        private string DefinirMargensTamanhoDocumento(dynamic relatorioImpressao)
+        private static string DefinirMargensTamanhoDocumento(dynamic relatorioImpressao)
         {
             string divDocumento = "<div style='height:" + relatorioImpressao.Height +
                                              " width:" + relatorioImpressao.Width +
@@ -83,7 +83,7 @@ namespace Reflector
             return divDocumento;
         }
 
-        private string VerificarSessao<T>(T obj, string html) where T : class
+        private static string VerificarSessao<T>(T obj, string html) where T : class
         {
             var regexTags = new Regex("&lt;@Sessao_Inicio.*?&lt;@Sessao_Fim&gt;");
             foreach (Match tag in regexTags.Matches(html))
@@ -130,7 +130,12 @@ namespace Reflector
             rgx = new Regex(@"FORMAT_(.*?)\((.*?)\-(.*?)\)");
             string[] splitTags = rgx.Split(html);
             if (splitTags.Length > 1)
-                html = DefinirFormatacao(splitTags[1], ref splitTags[3], splitTags[2]);
+            {
+                splitTags[1] = splitTags[1].Replace(splitTags[1], DefinirFormatacao(splitTags[1], ref splitTags[3], splitTags[2]));
+                splitTags[2] = splitTags[2].Replace(splitTags[2], string.Empty);
+                splitTags[3] = splitTags[3].Replace(splitTags[3], string.Empty);
+                html = string.Join("", splitTags);
+            }
 
             return html;
         }
@@ -241,7 +246,7 @@ namespace Reflector
             bool teste = false;
             if (temTabela)
             {
-                splitTags = Regex.Split(detalhe, @"<table(.*?)><tbody>(<tr><th>.*?</th></tr>)(.*?)</tbody></table>");
+                splitTags = Regex.Split(detalhe, @"<table(.*?)><tbody>(<tr>[<th>|<td>].*?[</th>|</td>]</tr>)(.*?)</tbody></table>");
                 if (Regex.IsMatch(splitTags[1], @"style|border"))
                 {
                     estiloCSS = splitTags[1];
@@ -396,8 +401,10 @@ namespace Reflector
                                 Type instanciaObjTipo = instanciaObj.GetType();
                                 if (!o.GetType().IsNotPublic && o.Count > 0)
                                 {
+                                    int contador = o.Count + 1;
                                     foreach (var objeto in o)
                                     {
+                                        contador--;
                                         foreach (PropertyInfo infoGeneric in objeto.GetType().GetProperties())
                                         {
                                             if (objeto != null && objeto.GetType().IsClass && objeto.GetType() != typeof(string) && o.Count < 2)
@@ -412,7 +419,7 @@ namespace Reflector
 
                                                 foreach (var linhaDetalhe in listaFormatada)
                                                 {
-                                                    if (listaFormatada.Count != o.Count)
+                                                    if (listaFormatada.Count != contador)
                                                     {
                                                         var replaceDicionario = listaFormatada.Where(r => !r.Value.StartsWith("<d>")).Select(r => r).ToList();
                                                         foreach (var linha in replaceDicionario)
