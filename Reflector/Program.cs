@@ -41,7 +41,7 @@ namespace Reflector
             Pessoa pessoa = new Pessoa { Id = 1, Nome = "Ronaldão das Américas - vulgo Banha", DataNascimento = DateTime.Parse("20/10/1986"), Enderecos = enderecos, Telefones = telefones, Documentos = new List<Documento>() { new Documento { Id = 1, Numero = "999.999.999-97", TipoDocumento = TipoDocumento.RG, Emissao = DateTime.Now, IsDocumentoIdentidade = true } } };
             string html = string.Empty;
             StringBuilder storeContent = new StringBuilder();
-            using (StreamReader reader = new StreamReader(@"D:\teste.txt"))
+           using (StreamReader reader = new StreamReader(@"C:\Textos\texto2.txt"))
             {
                 string line = string.Empty;
                 while ((line = reader.ReadLine()) != null)

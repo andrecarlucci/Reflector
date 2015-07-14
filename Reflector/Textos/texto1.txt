@@ -1,0 +1,27 @@
+<!-- Modelo -->
+<html>
+<meta charset="utf-8">
+<body>
+	<p>Template de teste - Data: FORMAT_DATE(CURRENT_DATE() - [DD] de [MMMM] de [AAAA])</p>
+	<p>Nome: <#Pessoa.Nome#> </p>
+	<p><@Detalhe_Inicio(Telefone)></p>
+	<table style="height: 86px;" border="1px solid #000" width="450">
+		<tbody>
+			<tr>
+				<th style="text-align: center; vertical-align: middle;">Tipo Telefone</th>
+				<th style="text-align: center; vertical-align: middle;">Numero</th>
+			</tr>
+			<tr>
+				<td><#Telefone.TipoTelefone#></td>
+				<td><#Telefone.Numero#></td>
+			</tr>
+		</tbody>
+	</table>
+	<p><@Detalhe_Fim(Telefone)></p>
+	<p><@Sessao_Inicio[CONDICIONAL({<#Endereco.TipoLogradouro#>} !DIFERENTE {!NULL})]>@RETORNO_SESSAO</p>
+	<p>{</p>
+	<p>nome da rua: <#Endereco.Logradouro#></p>
+	<p>}<@Sessao_Fim></p>
+
+</body>
+</html>

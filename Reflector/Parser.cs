@@ -20,16 +20,8 @@ namespace Reflector
         #region Editor de Relatório
         public static string ImprimirModeloRelatorio<T>(T obj, string html)
         {
-
-            //var textoPadrao = serviceTextoPadraoRelatorio.GetTextosPadroes().ToList();
-            //var textoParaImpressao = repositorio.GetAll().Where(r => r.Id == idRelatorio).ToList();
-            //Relatorio relatorioImpressao = repositorio.Get(r => r.Id == idRelatorio);
-            //string agatml = DefinirMargensTamanhoDocumento(relatorioImpressao);
-            //string html = relatorioImpressao.Description;
-           // string html = "";
             Regex rgx = new Regex("\\n|\\r|\\t");
             html = rgx.Replace(html, "");
-
             string pattern = "(</[pd]>)";
             dynamic objetoImpressao = obj;
             html = DefinirFormatacoes(objetoImpressao, html);
@@ -56,12 +48,8 @@ namespace Reflector
 
             rgx = new Regex(@"</d>|<p></p>|<br />");
             html = rgx.Replace(html, substituicao);
-            rgx = new Regex(@"&lt;@Detalhe_Fim\(.*?\)&gt;|");
+            rgx = new Regex(@"<@Detalhe_Fim\(.*?\)>|");
             html = rgx.Replace(html, substituicao);
-            //   rgx = new Regex(@"<[^\/>][^>].*><\/[^>]+>|<p></p>");
-            //   html = rgx.Replace(html, substituicao);
-
-
             rgx = new Regex(@"<[^\/>][^>]*><\/[^>]+>");
             while (rgx.IsMatch(html))
             {
@@ -70,22 +58,9 @@ namespace Reflector
             return html  ;
         }
 
-        private static string DefinirMargensTamanhoDocumento(dynamic relatorioImpressao)
-        {
-            string divDocumento = "<div style='height:" + relatorioImpressao.Height +
-                                             " width:" + relatorioImpressao.Width +
-                                             " margin-top:" + relatorioImpressao.TopMargin +
-                                             " margin-bottom:" + relatorioImpressao.BottomMargin +
-                                             " margin-left:" + relatorioImpressao.LeftMargin +
-                                             " margin-right:" + relatorioImpressao.RightMargin + "'>";
-
-
-            return divDocumento;
-        }
-
         private static string VerificarSessao<T>(T obj, string html) where T : class
         {
-            var regexTags = new Regex("&lt;@Sessao_Inicio.*?&lt;@Sessao_Fim&gt;");
+            var regexTags = new Regex("<@Sessao_Inicio.*?<@Sessao_Fim>");
             foreach (Match tag in regexTags.Matches(html))
             {
                 string sessao = ListarSessoes(obj, tag.ToString());
@@ -159,7 +134,7 @@ namespace Reflector
                     ent = condicaoSubstituida.Value;
                 }
                 sessao = sessao.Replace(condicao[1], ent);
-                string[] sessaoDividida = Regex.Split(sessao, @"&lt;@Sessao_Inicio&gt;\[CONDICIONAL\((.*?)\)\]|(.*?)@RETORNO_SESSAO\{.*?\}|(.*?)&lt;@Sessao_Fim&gt;");
+                string[] sessaoDividida = Regex.Split(sessao, @"<@Sessao_Inicio>\[CONDICIONAL\((.*?)\)\]|(.*?)@RETORNO_SESSAO\{.*?\}|(.*?)<@Sessao_Fim>");
                 string pattern = @"(!AND|!OR|!NOT|!MAIORIGUAL|!MAIOR|!MENORIGUAL|!MENOR|!IGUAL|!DIFERENTE)";
 
                 string[] operadoresAritimeticos = Regex.Split(sessaoDividida[1], pattern);
@@ -213,7 +188,7 @@ namespace Reflector
         {
 
             string[] documentoDetalhe = new string[4];
-            var regexTags = new Regex(@"(&lt;@Detalhe_Inicio)(.*?)(&lt;@Detalhe_Fim\(.*?\)&gt;)", RegexOptions.Singleline);
+            var regexTags = new Regex(@"(<@Detalhe_Inicio)(.*?)(<@Detalhe_Fim\(.*?\)>)", RegexOptions.Singleline);
             string[] documentoHtml = regexTags.Split(html);
             string pattern = "(@Detalhe_Inicio)(.*?)(@Detalhe_Fim)";
             string[] documentoHtmle = Regex.Split(html, pattern);
@@ -256,7 +231,7 @@ namespace Reflector
 
                 var cabecalhoTable = splitTags[2];
                 splitTags[2] = string.Empty;
-                splitTags[0] = splitTags[0].Substring(0, splitTags[0].IndexOf("<p>&lt;@Detalhe_Inicio")) + "!sub!" + splitTags[0].Substring(splitTags[0].IndexOf("<p>&lt;@Detalhe_Inicio"));
+                splitTags[0] = splitTags[0].Substring(0, splitTags[0].IndexOf("<p><@Detalhe_Inicio")) + "!sub!" + splitTags[0].Substring(splitTags[0].IndexOf("<p><@Detalhe_Inicio"));
                 detalhe = string.Join("", splitTags);
                 detalhe = DuplicarLinhasDetalhe(obj, detalhe, ref tipoDetalhe, ref teste, ref resultado);
                 detalhe = Regex.Replace(detalhe, "!sub!", "<table" + estiloCSS + "><tbody>" + cabecalhoTable) + "</tbody></table>";
@@ -283,7 +258,7 @@ namespace Reflector
 
             //  detalhe = string.Join("", splitTags);
 
-            string patterno = "(" + tipoDetalhe + ")&gt;</p>";
+            string patterno = "(" + tipoDetalhe + ")></p>";
             return detalhe = detalhe.Replace(patterno, string.Empty);
 
         }
@@ -298,10 +273,10 @@ namespace Reflector
             string[] documentoFinal = new string[20];
 
 
-            var regexTags = new Regex(@"(&lt;@Detalhe_Inicio)(.*?)(&lt;@Detalhe_Fim\(.*?\)&gt;)", RegexOptions.Singleline);
+            var regexTags = new Regex(@"(<@Detalhe_Inicio)(.*?)(<@Detalhe_Fim\(.*?\)>)", RegexOptions.Singleline);
             string[] documentoHtml = regexTags.Split(detalhe);
 
-            //string pattern = @"(&lt;@Detalhe_Inicio)(.*?)(&lt;@Detalhe_Fim.*?&gt;)";
+            //string pattern = @"(<@Detalhe_Inicio)(.*?)(<@Detalhe_Fim.*?>)";
             //string[] documentoHtmle = Regex.Split(detalhe, pattern);
             foreach (PropertyInfo info in obj.GetType().GetProperties())
             {
@@ -376,7 +351,7 @@ namespace Reflector
                             if (o != null && !o.GetType().IsGenericType && (o.GetType() == typeof(string) || !o.GetType().IsClass))
                             {
                                 {
-                                    campo = String.Format("&lt;#{0}.{1}#&gt;", tipo.Name, info.Name);
+                                    campo = String.Format("<#{0}.{1}#>", tipo.Name, info.Name);
                                 }
 
                                 sexo = info.Name.ToLower().Equals("sexo") ? o.ToString().ToLower() : string.Empty;
@@ -413,7 +388,7 @@ namespace Reflector
                                             }
                                             else
                                             {
-                                                campo = String.Format("&lt;#{0}.{1}#&gt;", info.PropertyType.GenericTypeArguments[0].Name, infoGeneric.Name);
+                                                campo = String.Format("<#{0}.{1}#>", info.PropertyType.GenericTypeArguments[0].Name, infoGeneric.Name);
                                                 string valor = (objeto.GetType().GetProperty(infoGeneric.Name).GetValue(objeto, null) != null ? objeto.GetType().GetProperty(infoGeneric.Name).GetValue(objeto, null).ToString() : null);
                                                 var listaFormatada = dic.Where(r => r.Value.IndexOf(campo) != -1).Select(r => r).ToList();
 
@@ -456,7 +431,7 @@ namespace Reflector
 
                                     if (o != null)
                                     {
-                                        campo = String.Format("&lt;#{0}.{1}#&gt;", infoGeneric.DeclaringType.Name, infoGeneric.Name);
+                                        campo = String.Format("<#{0}.{1}#>", infoGeneric.DeclaringType.Name, infoGeneric.Name);
 
 
                                         string valor = (o.GetType().GetProperty(infoGeneric.Name).GetValue(o, null) != null ? o.GetType().GetProperty(infoGeneric.Name).GetValue(o, null).ToString() : null);
