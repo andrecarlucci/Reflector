@@ -23,12 +23,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Reflector
-{
-    class Program
-    {
-        static void Main(string[] args)
-        {
+namespace Reflector {
+    class Program {
+        static void Main(string[] args) {
             List<Telefone> telefones = new List<Telefone>(){
                 new Telefone {Id = 1, Numero = "554833333333", TipoTelefone = TipoTelefone.Residencial },
                 new Telefone { Id = 2, Numero = "554833334444", TipoTelefone = TipoTelefone.Comercial },
@@ -38,26 +35,26 @@ namespace Reflector
                 new Endereco { Id = 1, Numero = 22, Logradouro = "Rua Sem Saida", TipoEndereco = TipoEndereco.Residencial, TipoLogradouro = TipoLogradouro.Rua, TipoResidencia = TipoResidencia.Casa }, 
                 new Endereco { Id = 2, Numero = 33, Logradouro = "Rua Com Saida", TipoEndereco = TipoEndereco.Comercial, TipoLogradouro = TipoLogradouro.Rua, TipoResidencia = TipoResidencia.Sala } 
             };
-            Pessoa pessoa = new Pessoa { Id = 1, Nome = "Ronaldão das Américas - vulgo Banha", DataNascimento = DateTime.Parse("20/10/1986"), Enderecos = enderecos, Telefones = telefones, Documentos = new List<Documento>() { new Documento { Id = 1, Numero = "999.999.999-97", TipoDocumento = TipoDocumento.RG, Emissao = DateTime.Now, IsDocumentoIdentidade = true } } };
+            Pessoa pessoa = new Pessoa {
+                Id = 1,
+                Nome = "Ronaldão das Américas - vulgo Banha",
+                DataNascimento = DateTime.Parse("20/10/1986"),
+                Enderecos = enderecos,
+                Telefones = telefones,
+                Documentos = new List<Documento>() { new Documento { Id = 1, Numero = "999.999.999-97", TipoDocumento = TipoDocumento.RG, Emissao = DateTime.Now, IsDocumentoIdentidade = true } }
+            };
             string html = string.Empty;
             StringBuilder storeContent = new StringBuilder();
-           using (StreamReader reader = new StreamReader(@"C:\Textos\texto2.txt"))
-            {
+            using (StreamReader reader = new StreamReader(@"C:\Textos\texto2.txt")) {
                 string line = string.Empty;
-                while ((line = reader.ReadLine()) != null)
-                {
+                while ((line = reader.ReadLine()) != null) {
                     storeContent.Append(line);
                     html += line;
                 }
             }
-             
-            html = Parser.ImprimirModeloRelatorio(pessoa, html);
-            using (System.IO.StreamWriter writer = new System.IO.StreamWriter(@"D:\saida.html"))
-            {
-                writer.WriteLine(html);
-                writer.Close();
-            }
 
+            html = Parser.ImprimirModeloRelatorio(pessoa, html);
+            File.WriteAllText("output.txt", html);
         }
     }
 

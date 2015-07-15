@@ -1,0 +1,34 @@
+<!-- Modelo -->
+<html>
+<meta charset="utf-8">
+<body>
+	<p><b>Declaração de Imóvel</b></p>
+	<p>Eu, <#Pessoa.Nome#> declaro para os devidos fins que meu imóvel <#Endereco.TipoEndereco#></p>
+	<p>está localizado no seguinte endereço:</p>
+	<p><@Sessao_Inicio[CONDICIONAL({<#Endereco.TipoEndereco#>} !IGUAL {Comercial})]>@RETORNO_SESSAO</p>
+	<p>{</p>
+	<p><#Endereco.Logradouro#>, nº <#Endereco.Numero#> está localizo meu endereço comercial</p>
+	<p>}<@Sessao_Fim></p>
+	<p><@Sessao_Inicio[CONDICIONAL({<#Endereco.TipoEndereco#>} !IGUAL {Residencial})]>@RETORNO_SESSAO</p>
+	<p>{</p>
+	<p><#Endereco.Logradouro#>, nº <#Endereco.Numero#> está localizo meu endereço residencial</p>
+	<p>}<@Sessao_Fim></p>
+	<p> Estes são os telefones cadastrados:</p>
+     <p><@Detalhe_Inicio(Telefone)></p>
+	<table style="height: 86px;" border="1px solid #000" width="450">
+		<tbody>
+			<tr>
+				<th style="text-align: center; vertical-align: middle;">Tipo Telefone</th>
+				<th style="text-align: center; vertical-align: middle;">Numero</th>
+			</tr>
+			<tr>
+				<td><#Telefone.TipoTelefone#></td>
+				<td><#Telefone.Numero#></td>
+			</tr>
+		</tbody>
+	</table>
+	<p><@Detalhe_Fim(Telefone)></p>
+
+
+</body>
+</html>
