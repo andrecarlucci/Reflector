@@ -16,7 +16,7 @@ namespace Reflector.Entidades
     {
         Residencial = 1,
         Celular = 2,
-        Comercial = 2
+        Comercial = 3
         
     }
 }
